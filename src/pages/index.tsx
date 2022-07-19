@@ -5,9 +5,6 @@ import { useState } from "react";
 import Item from "../types/Item";
 import Card from "../components/Card";
 import Subscription from "../types/Subscription";
-import { useQuery } from "react-query";
-import getItems from "../utils/get-items";
-import { url } from "inspector";
 
 type TechnologyCardProps = {
   name: string;
@@ -60,28 +57,19 @@ const Home: NextPage = () => {
       }
     ]
   );
-
-  subscriptions?.forEach(sub => {
-    const { data, status } = useQuery("item-query",
-      () => getItems(sub.rssLink), {
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-    )
-    if (status === "loading") {
-      console.log("loading")
-    }
-    if (status === "error") {
-      console.log("error")
-    }
-    if (status === "success") {
-      console.log("success")
-    }
-    if (data) {
-      console.log(data)
+  
+  // Get items from subscription rss links
+  var rss = null
+  const rssSet = new Set()
+  if (subscriptions) {
+    for (let sub of subscriptions) {
+      rss = trpc.useQuery(["rss.getRSS", { url: sub.rssLink }]);
+      // TODO: parse rss/xml
+      rssSet.add(rss)
+      console.log('rss :>> ', rss.data);
     }
   }
-  );
+
 
   return (
     <>
@@ -103,7 +91,7 @@ const Home: NextPage = () => {
           }
         </div>
         <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-          {/* {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>} */}
+          {rss?.data ? <p>Size: {rssSet.size}</p> : <p>Loading..</p>}
         </div>
       </main>
     </>
