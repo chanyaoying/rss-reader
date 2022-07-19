@@ -49,14 +49,14 @@ const Home: NextPage = () => {
         description: "example description",
         imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
       },
-      {
-        id: 2,
-        title: "Example sub 2",
-        link: "https://example.com",
-        rssLink: "https://hnrss.org/frontpage",
-        description: "example description again",
-        imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
-      }
+      // {
+      //   id: 2,
+      //   title: "Example sub 2",
+      //   link: "https://example.com",
+      //   rssLink: "https://hnrss.org/frontpage",
+      //   description: "example description again",
+      //   imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+      // }
     ]
   );
 
@@ -74,7 +74,7 @@ const Home: NextPage = () => {
       // }
     }
     rssSet.forEach((item: any) => {
-      const itemData = rssParser(item.data) as Item[]
+      const itemData = rssParser(item.data?.data)
       console.log('itemData :>> ', itemData);
     })
   }
