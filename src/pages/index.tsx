@@ -5,6 +5,8 @@ import { useState } from "react";
 import Item from "../types/Item";
 import Card from "../components/Card";
 import Subscription from "../types/Subscription";
+import rssParser from "../utils/rssParser";
+import { any } from "zod";
 
 type TechnologyCardProps = {
   name: string;
@@ -17,7 +19,7 @@ const Home: NextPage = () => {
 
   // TODO: Get them from fetching (React Query)
   // if not using example, default must be set to null
-  const [items, setItems] = useState<Item[]>([
+  const [items, setItems] = useState<Item[] | null>([
     {
       id: 1,
       title: "Example title",
@@ -57,7 +59,7 @@ const Home: NextPage = () => {
       }
     ]
   );
-  
+
   // Get items from subscription rss links
   var rss = null
   const rssSet = new Set()
@@ -66,36 +68,43 @@ const Home: NextPage = () => {
       rss = trpc.useQuery(["rss.getRSS", { url: sub.rssLink }]);
       // TODO: parse rss/xml
       rssSet.add(rss)
-      console.log('rss :>> ', rss.data);
+      // for (const item of rssSet.forEach) {
+      //   const itemData = rssParser(item.data) as Item[]
+      //   console.log('itemData :>> ', itemData);
+      // }
     }
+    rssSet.forEach((item: any) => {
+      const itemData = rssParser(item.data) as Item[]
+      console.log('itemData :>> ', itemData);
+    })
   }
 
 
-  return (
-    <>
-      <Head>
-        <title>RSS Reader</title>
-        <meta name="description" content="Read and save " />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+return (
+  <>
+    <Head>
+      <title>RSS Reader</title>
+      <meta name="description" content="Read and save " />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
-          RSS Reader
-        </h1>
-        <div className="grid gap-3 pt-3 mt-3 text-left ">
-          {
-            items ?
-              items.map(item => (<Card key={item.id} {...item} />)) :
-              <div>Loading...</div>
-          }
-        </div>
-        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-          {rss?.data ? <p>Size: {rssSet.size}</p> : <p>Loading..</p>}
-        </div>
-      </main>
-    </>
-  );
+    <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+      <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+        RSS Reader
+      </h1>
+      <div className="grid gap-3 pt-3 mt-3 text-left ">
+        {
+          items ?
+            items.map(item => (<Card key={item.id} {...item} />)) :
+            <div>Loading...</div>
+        }
+      </div>
+      <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
+        {rss?.data ? <p>Size: {rssSet.size}</p> : <p>Loading..</p>}
+      </div>
+    </main>
+  </>
+);
 };
 
 // const TechnologyCard = ({
