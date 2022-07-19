@@ -1,9 +1,16 @@
-type Item = {
-    id: number;
-    title: string;
-    link: string;
-    description: string;
-    pubDate: string;
-  }
+import { z } from "zod";
+
+const ItemValidaor = z.object({
+  id: z.number(),
+  title: z.string(),
+  link: z.string(),
+  description: z.string(),
+  pubDate: z.string(),
+})
+
+// ItemValidaor.parse({ ... });
+
+// extract the inferred type
+type Item = z.infer<typeof ItemValidaor>
 
 export default Item;
