@@ -8,6 +8,7 @@ const ItemValidaor = z.object({
   pubDate: z.string(),
 })
 
+// To parse
 // ItemValidaor.parse({ ... });
 
 // extract the inferred type

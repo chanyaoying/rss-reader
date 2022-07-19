@@ -4,6 +4,7 @@ import { trpc } from "../utils/trpc";
 import { useState } from "react";
 import Item from "../types/Item";
 import Card from "../components/Card";
+import Subscription from "../types/Subscription";
 
 type TechnologyCardProps = {
   name: string;
@@ -14,6 +15,8 @@ type TechnologyCardProps = {
 const Home: NextPage = () => {
   // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
 
+  // TODO: Get them from fetching (React Query)
+  // if not using example, default must be set to null
   const [items, setItems] = useState<Item[]>([
     {
       id: 1,
@@ -32,6 +35,27 @@ const Home: NextPage = () => {
   ]
   );
 
+  // const [items, setItems] = useState<Item[] | null>(null)
+
+  const [subscription, setSubscription] = useState<Subscription[] | null>(
+    [
+      {
+        id: 1,
+        title: "Example title",
+        link: "https://example.com",
+        description: "example description",
+        imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+      },
+      {
+        id: 2,
+        title: "Example title 2",
+        link: "https://example.com",
+        description: "example description again",
+        imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+      }
+    ]
+  );
+
   return (
     <>
       <Head>
@@ -45,9 +69,11 @@ const Home: NextPage = () => {
           RSS Reader
         </h1>
         <div className="grid gap-3 pt-3 mt-3 text-left ">
-          {items.map(item => (
-            <Card key={item.id} {...item} />
-          ))}
+          {
+            items ?
+              items.map(item => (<Card key={item.id} {...item} />)) :
+              <div>Loading...</div>
+          }
         </div>
         <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
           {/* {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>} */}
