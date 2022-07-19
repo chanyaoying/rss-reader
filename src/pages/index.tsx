@@ -5,6 +5,9 @@ import { useState } from "react";
 import Item from "../types/Item";
 import Card from "../components/Card";
 import Subscription from "../types/Subscription";
+import { useQuery } from "react-query";
+import getItems from "../utils/get-items";
+import { url } from "inspector";
 
 type TechnologyCardProps = {
   name: string;
@@ -37,23 +40,47 @@ const Home: NextPage = () => {
 
   // const [items, setItems] = useState<Item[] | null>(null)
 
-  const [subscription, setSubscription] = useState<Subscription[] | null>(
+  const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(
     [
       {
         id: 1,
-        title: "Example title",
+        title: "Example sub 1",
         link: "https://example.com",
+        rssLink: "https://www.straitstimes.com/news/singapore/rss.xml",
         description: "example description",
         imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
       },
       {
         id: 2,
-        title: "Example title 2",
+        title: "Example sub 2",
         link: "https://example.com",
+        rssLink: "https://hnrss.org/frontpage",
         description: "example description again",
         imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
       }
     ]
+  );
+
+  subscriptions?.forEach(sub => {
+    const { data, status } = useQuery("item-query",
+      () => getItems(sub.rssLink), {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+    )
+    if (status === "loading") {
+      console.log("loading")
+    }
+    if (status === "error") {
+      console.log("error")
+    }
+    if (status === "success") {
+      console.log("success")
+    }
+    if (data) {
+      console.log(data)
+    }
+  }
   );
 
   return (
