@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import Item from "../components/Item";
+import Item from "../types/Item";
 import Card from "../components/Card";
 
 type TechnologyCardProps = {
