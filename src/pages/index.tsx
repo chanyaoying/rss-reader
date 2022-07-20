@@ -1,12 +1,11 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Item from "../types/Item";
 import Card from "../components/Card";
 import Subscription from "../types/Subscription";
 import rssParser from "../utils/rssParser";
-import { any } from "zod";
 
 type TechnologyCardProps = {
   name: string;
@@ -17,27 +16,8 @@ type TechnologyCardProps = {
 const Home: NextPage = () => {
   // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
 
-  // TODO: Get them from fetching (React Query)
-  // if not using example, default must be set to null
-  const [items, setItems] = useState<Item[] | null>([
-    {
-      id: 1,
-      title: "Example title",
-      link: "https://example.com",
-      description: "Example description",
-      pubDate: "2020-01-01",
-    },
-    {
-      id: 2,
-      title: "Example title 2",
-      link: "https://example.com",
-      description: "Example description again",
-      pubDate: "2020-01-02",
-    }
-  ]
-  );
+  // const [items, setItems] = useState<Item[] | null>(null);
 
-  // const [items, setItems] = useState<Item[] | null>(null)
 
   const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(
     [
@@ -49,62 +29,64 @@ const Home: NextPage = () => {
         description: "example description",
         imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
       },
-      // {
-      //   id: 2,
-      //   title: "Example sub 2",
-      //   link: "https://example.com",
-      //   rssLink: "https://hnrss.org/frontpage",
-      //   description: "example description again",
-      //   imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
-      // }
+      {
+        id: 2,
+        title: "Example sub 2",
+        link: "https://example.com",
+        rssLink: "https://hnrss.org/frontpage",
+        description: "example description again",
+        imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+      }
     ]
   );
 
   // Get items from subscription rss links
-  var rss = null
-  const rssSet = new Set()
+  // TODO: encapsulate in a useEffect to avoid re-rendering
+  // ? There is already useQuery that avoids re-rendering?
+  var itemsLoading = true;
+  var items: Item[] = []
   if (subscriptions) {
+    const rssSet = new Set<string>()
     for (let sub of subscriptions) {
-      rss = trpc.useQuery(["rss.getRSS", { url: sub.rssLink }]);
-      // TODO: parse rss/xml
-      rssSet.add(rss)
-      // for (const item of rssSet.forEach) {
-      //   const itemData = rssParser(item.data) as Item[]
-      //   console.log('itemData :>> ', itemData);
-      // }
+      const { isLoading, data, error } = trpc.useQuery(["rss.getRSS", { url: sub.rssLink }])
+      data ? rssSet.add(data.data) : null
+      itemsLoading = isLoading
+      if (error) {
+        console.log('error :>> ', error);
+      }
     }
-    rssSet.forEach((item: any) => {
-      const itemData = rssParser(item.data?.data)
-      console.log('itemData :>> ', itemData);
+    rssSet.forEach((item: string) => {
+      items.push(...rssParser(item))
     })
   }
+  console.log('rss :>> ', items);
 
 
-return (
-  <>
-    <Head>
-      <title>RSS Reader</title>
-      <meta name="description" content="Read and save " />
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+  return (
+    <>
+      <Head>
+        <title>RSS Reader</title>
+        <meta name="description" content="Read and save " />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-    <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-      <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
-        RSS Reader
-      </h1>
-      <div className="grid gap-3 pt-3 mt-3 text-left ">
-        {
-          items ?
-            items.map(item => (<Card key={item.id} {...item} />)) :
-            <div>Loading...</div>
-        }
-      </div>
-      <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-        {rss?.data ? <p>Size: {rssSet.size}</p> : <p>Loading..</p>}
-      </div>
-    </main>
-  </>
-);
+      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+          RSS Reader
+        </h1>
+        <div className="grid gap-3 pt-3 mt-3 text-left ">
+          {
+            !itemsLoading ?
+              items?.map(item => (<Card key={item.id} {...item} />)) :
+              <div>Loading...</div>
+          }
+        </div>
+        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
+          {subscriptions ? <p>Subscriptions: {subscriptions.length}</p> : <p>Loading..</p>}
+        </div>
+      </main>
+    </>
+  );
 };
 
 // const TechnologyCard = ({

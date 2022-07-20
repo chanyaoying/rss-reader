@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const ItemValidaor = z.object({
-  id: z.number(),
+  id: z.string().uuid(),
   title: z.string(),
   link: z.string(),
   description: z.string(),

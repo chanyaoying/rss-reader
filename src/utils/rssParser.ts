@@ -1,26 +1,28 @@
 import Item from "../types/Item";
 import { parseString } from "xml2js";
+import { v4 as uuidv4 } from "uuid";
 
 export default function rssParser(text: string) {
     // const parser = new DOMParser();
     const items: any[] = []
-    parseString(text, {trim: true}, (err, result) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        items.push(result.rss.channel[0].item);
-    });
-    if (!items.length) {
-        console.log("it is rss");
+    if (typeof text === "string") {
+        parseString(text, (err, result) => {
+            if (err) {
+                console.error(err);
+                return;
+            }
+            const channel = result.rss.channel[0]
+            if (channel.item) {
+                channel.item.forEach((item: any) => {
+                    const id = uuidv4();
+                    const title = item.title[0]
+                    const link = item.link[0]
+                    const description = item.description[0]
+                    const pubDate = item.pubDate[0]
+                    items.push({ id, title, link, description, pubDate } as Item)
+                })
+            }
+        });
     }
-    // const result = Array.from(items).map((item) => {
-    //     const id = 0;
-    //     const title = item.querySelector("title")?.textContent || "";
-    //     const link = item.querySelector("link")?.textContent || "";
-    //     const description = item.querySelector("description")?.textContent || "";
-    //     const pubDate = item.querySelector("pubDate")?.textContent || "";
-    //     return { id, title, link, description, pubDate } as Item;
-    // }) ;
-    return items[0];
+    return items as Item[];
 }
