@@ -63,9 +63,9 @@ const Home: NextPage = () => {
         </Head>
 
         <main className="container mx-auto flex flex-col items-center justify-center p-4">
-            <h1 className="py-6 text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+            <p className="py-6 text-4xl md:text-[5rem] leading-normal font-bold text-gray-200">
                 RSS Reader
-            </h1>
+            </p>
             <div className="grid gap-3 pt-3 mt-3 text-left">
                 {
                     !itemsLoading ?
