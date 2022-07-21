@@ -8,6 +8,7 @@ const Card = (
     link,
     description,
     pubDate,
+    origin,
   }: Item
 ) => {
   return (
@@ -18,9 +19,8 @@ const Card = (
         target="_blank"
         rel="noreferrer">{title}</a>
       <p>{description}</p>
-      
-      {pubDate}
-
+      <p>{pubDate}</p>
+      <p>{origin}</p>
     </div>
   )
 }

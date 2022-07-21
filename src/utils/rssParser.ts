@@ -12,6 +12,7 @@ export default function rssParser(text: string) {
                 return;
             }
             const channel = result.rss.channel[0]
+            var origin: string = channel?.title[0]
             if (channel.item) {
                 channel.item.forEach((item: any) => {
                     const id = uuidv4();
@@ -19,7 +20,7 @@ export default function rssParser(text: string) {
                     const link = item.link[0]
                     const description = item.description[0]
                     const pubDate = item.pubDate[0]
-                    items.push({ id, title, link, description, pubDate } as Item)
+                    items.push({ id, title, link, description, pubDate, origin } as Item)
                 })
             }
         });

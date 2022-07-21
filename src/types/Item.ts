@@ -6,6 +6,7 @@ const ItemValidaor = z.object({
   link: z.string(),
   description: z.string(),
   pubDate: z.string(),
+  origin: z.string(),
 })
 
 // To parse
