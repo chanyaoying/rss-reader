@@ -11,9 +11,9 @@ export default function rssParser(text: string) {
                 console.error(err);
                 return;
             }
-            const channel = result.rss.channel[0]
-            var origin: string = channel?.title[0]
-            if (channel.item) {
+            const channel = result?.rss.channel[0]
+            if (channel && channel.item) {
+                var origin: string = channel?.title[0]
                 channel.item.forEach((item: any) => {
                     const id = uuidv4();
                     const title = item.title[0]
