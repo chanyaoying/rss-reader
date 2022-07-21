@@ -1,14 +1,19 @@
 import PluginParser from "../../classes/PluginParser";
 import Item from "../../types/Item";
 
-const StraitTimesParser = new PluginParser(
-    "The Straits Times Singapore News", (item: Item) => {
+const HackerNewsParser = new PluginParser(
+    "Hacker News: Front Page", (item: Item) => {
         const { id, title, link, description, pubDate, origin } = item;
         
         const newDescription = description
-            .replace(/.+(<p>)/, "")
-            .replace(/(<\/p>)+/, "")
-        
+            .replace(/(<p>Points:).+/, "")
+            .replace(/(<p># Comments:).+/, "")
+            .replace(/.+(<\/a><\/p>)/, "")
+            .replaceAll("\n", "")
+            .replace("<hr>", "")
+            .replaceAll("<p>", " ")
+            .replaceAll("</p>", " ")
+
         const newItem = {
             id,
             title,
@@ -21,4 +26,4 @@ const StraitTimesParser = new PluginParser(
     }
 );
 
-export default StraitTimesParser
+export default HackerNewsParser

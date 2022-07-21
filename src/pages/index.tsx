@@ -8,83 +8,71 @@ import Subscription from "../types/Subscription";
 import rssParser from "../utils/rssParser";
 import { RSSPluginParsers } from "../utils/plugins/index";
 
-type TechnologyCardProps = {
-  name: string;
-  description: string;
-  documentation: string;
-};
 
 const Home: NextPage = () => {
-  // const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
 
-  // const [items, setItems] = useState<Item[] | null>(null);
+    const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(
+        [
+            {
+              id: 1,
+              title: "Example sub 1",
+              link: "https://example.com",
+              rssLink: "https://www.straitstimes.com/news/singapore/rss.xml",
+              description: "example description",
+              imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+            },
+            {
+              id: 2,
+              title: "Example sub 2",
+              link: "https://example.com",
+              rssLink: "https://hnrss.org/frontpage",
+              description: "example description again",
+              imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+            }
+        ]
+    );
 
-
-  const [subscriptions, setSubscriptions] = useState<Subscription[] | null>(
-    [
-      {
-        id: 1,
-        title: "Example sub 1",
-        link: "https://example.com",
-        rssLink: "https://www.straitstimes.com/news/singapore/rss.xml",
-        description: "example description",
-        imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
-      },
-      // {
-      //   id: 2,
-      //   title: "Example sub 2",
-      //   link: "https://example.com",
-      //   rssLink: "https://hnrss.org/frontpage",
-      //   description: "example description again",
-      //   imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
-      // }
-    ]
-  );
-
-  // Get items from subscription rss links
-  // TODO: encapsulate in a useEffect to avoid re-rendering
-  // ? There is already useQuery that avoids re-rendering?
-  var itemsLoading = true;
-  var items: Item[] = []
-  if (subscriptions) {
-    const rssSet = new Set<string>()
-    for (let sub of subscriptions) {
-      const { isLoading, data, error } = trpc.useQuery(["rss.getRSS", { url: sub.rssLink }])
-      data ? rssSet.add(data.data) : null
-      itemsLoading = isLoading
-      if (error) {
-        console.log('error :>> ', error);
-      }
+    var itemsLoading = true;
+    var items: Item[] = []
+    if (subscriptions) {
+        const rssSet = new Set<string>()
+        for (let sub of subscriptions) {
+            const { isLoading, data, error } = trpc.useQuery(["rss.getRSS", { url: sub.rssLink }])
+            data ? rssSet.add(data.data) : null
+            itemsLoading = isLoading
+            if (error) {
+                console.log('error :>> ', error);
+            }
+        }
+        rssSet.forEach((item: string) => {
+            items.push(...rssParser(item))
+        })
     }
-    rssSet.forEach((item: string) => {
-      items.push(...rssParser(item))
-    })
-  }
 
 
   return (
     <>
-      <Head>
-        <title>RSS Reader</title>
-        <meta name="description" content="Read and save " />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+        <Head>
+            <title>RSS Reader</title>
+            <meta name="description" content="Read and save " />
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
 
-      <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-        <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
-          RSS Reader
-        </h1>
-        <div className="grid gap-3 pt-3 mt-3 text-left ">
-          {
-            !itemsLoading ?
-              items?.map(item => (<Card key={item.id} {...(RSSPluginParsers.parse(item))} />)) :
-              <div>Loading...</div>
-          }
-        </div>
-        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-          {subscriptions ? <p>Subscriptions: {subscriptions.length}</p> : <p>Loading..</p>}
-        </div>
-      </main>
+        <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
+            <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+                RSS Reader
+            </h1>
+            <div className="grid gap-3 pt-3 mt-3 text-left ">
+                {
+                    !itemsLoading ?
+                      items?.map(item => (<Card key={item.id} {...(RSSPluginParsers.parse(item))} />)) :
+                      <div>Loading...</div>
+                }
+            </div>
+            <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
+                {subscriptions ? <p>Subscriptions: {subscriptions.length}</p> : <p>Loading..</p>}
+            </div>
+        </main>
     </>
   );
 };
