@@ -2,9 +2,13 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
+
 import Item from "../types/Item";
-import Card from "../components/Card";
 import Subscription from "../types/Subscription";
+
+import Card from "../components/Card";
+import LoadingCard from "../components/loading/LoadingCard";
+
 import rssParser from "../utils/rssParser";
 import { RSSPluginParsers } from "../utils/plugins/index";
 
@@ -58,18 +62,18 @@ const Home: NextPage = () => {
             <link rel="icon" href="/favicon.ico" />
         </Head>
 
-        <main className="container mx-auto flex flex-col items-center justify-center h-screen p-4">
-            <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
+        <main className="container mx-auto flex flex-col items-center justify-center p-4">
+            <h1 className="py-6 text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
                 RSS Reader
             </h1>
-            <div className="grid gap-3 pt-3 mt-3 text-left ">
+            <div className="grid gap-3 pt-3 mt-3 text-left">
                 {
                     !itemsLoading ?
                       items?.map(item => (<Card key={item.id} {...(RSSPluginParsers.parse(item))} />)) :
-                      <div>Loading...</div>
+                      <LoadingCard></LoadingCard>
                 }
             </div>
-            <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
+            <div className="py-6 text-2xl text-blue-500 flex justify-center items-center w-full">
                 {subscriptions ? <p>Subscriptions: {subscriptions.length}</p> : <p>Loading..</p>}
             </div>
         </main>
