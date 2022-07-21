@@ -12,7 +12,8 @@ const HackerNewsParser = new PluginParser(
             .split("\n")
             .filter(line => line.length > 0)
             .filter(line => !line.includes("<p>Article URL"))
-            .join("\n");
+            .join("\n")
+            .replace("<a", "<a target=\"_blank\"");
 
         const newItem = {
             id,
