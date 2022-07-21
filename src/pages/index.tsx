@@ -1,11 +1,12 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Item from "../types/Item";
 import Card from "../components/Card";
 import Subscription from "../types/Subscription";
 import rssParser from "../utils/rssParser";
+import { RSSPluginParsers } from "../utils/plugins/index";
 
 type TechnologyCardProps = {
   name: string;
@@ -29,14 +30,14 @@ const Home: NextPage = () => {
         description: "example description",
         imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
       },
-      {
-        id: 2,
-        title: "Example sub 2",
-        link: "https://example.com",
-        rssLink: "https://hnrss.org/frontpage",
-        description: "example description again",
-        imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
-      }
+      // {
+      //   id: 2,
+      //   title: "Example sub 2",
+      //   link: "https://example.com",
+      //   rssLink: "https://hnrss.org/frontpage",
+      //   description: "example description again",
+      //   imageURL: "https://www.straitstimes.com/themes/custom/straitstimes/images/st-logo.png",
+      // }
     ]
   );
 
@@ -59,7 +60,6 @@ const Home: NextPage = () => {
       items.push(...rssParser(item))
     })
   }
-  console.log('rss :>> ', items);
 
 
   return (
@@ -77,7 +77,7 @@ const Home: NextPage = () => {
         <div className="grid gap-3 pt-3 mt-3 text-left ">
           {
             !itemsLoading ?
-              items?.map(item => (<Card key={item.id} {...item} />)) :
+              items?.map(item => (<Card key={item.id} {...(RSSPluginParsers.parse(item))} />)) :
               <div>Loading...</div>
           }
         </div>
