@@ -8,11 +8,11 @@ const HackerNewsParser = new PluginParser(
         const newDescription = description
             .replace(/(<p>Points:).+/, "")
             .replace(/(<p># Comments:).+/, "")
-            .replace(/.+(<\/a><\/p>)/, "")
-            .replaceAll("\n", "")
             .replace("<hr>", "")
-            .replaceAll("<p>", " ")
-            .replaceAll("</p>", " ")
+            .split("\n")
+            .filter(line => line.length > 0)
+            .filter(line => !line.includes("<p>Article URL"))
+            .join("\n");
 
         const newItem = {
             id,
